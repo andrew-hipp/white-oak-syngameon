@@ -1,0 +1,10 @@
+source('../scripts/00.readData.R')
+source('../scripts/01.clustering.R')
+source('../scripts/02.mapping.R')
+source('../scripts/03.tables.R')
+source('../scripts/04.winnowingLoci.R')
+source('../scripts/05.makeStructureFiles.R')
+
+message('\n\nIf you are going to redo STRUCTURE, do it manually, my friend.')
+message('... and the same goes for simulations!\n\n')
+message('** Run scripts 6, 7, 8a and 8b and 8c on your own, in order, and STRUCTURE / DISTRUCT as needed')
