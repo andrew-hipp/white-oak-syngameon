@@ -50,14 +50,57 @@ if(!exists('mapsLittle')) {
   pj <- project(xy, proj4string, inverse=TRUE)
   mapsLittle$all$lat <- pj$y
   mapsLittle$all$long <- pj$x
+
+  mapsLittle$macro <- mapsLittle[['macrocarpa']]
+  xy <- as.data.frame(mapsLittle$macro[, c('long', 'lat')])
+  pj <- project(xy, proj4string, inverse=TRUE)
+  mapsLittle$macro$lat <- pj$y
+  mapsLittle$macro$long <- pj$x
+
+  mapsLittle$alba <- mapsLittle[['alba']]
+  xy <- as.data.frame(mapsLittle$alba[, c('long', 'lat')])
+  pj <- project(xy, proj4string, inverse=TRUE)
+  mapsLittle$alba$lat <- pj$y
+  mapsLittle$alba$long <- pj$x
+
+  # 'michauxii|bicolor|stellata'
+  mapsLittle$'michauxii|bicolor|stellata' <- do.call(rbind,
+    mapsLittle[c('michauxi',
+                 'bicolor',
+                 'stellata')]
+               )
+  xy <- as.data.frame(mapsLittle$'michauxii|bicolor|stellata'[, c('long', 'lat')])
+  pj <- project(xy, proj4string, inverse=TRUE)
+  mapsLittle$'michauxii|bicolor|stellata'$lat <- pj$y
+  mapsLittle$'michauxii|bicolor|stellata'$long <- pj$x
+
+  # 'montana|prinoides|muehlenbergii'
+  mapsLittle$'montana|prinoides|muehlenbergii' <- do.call(rbind,
+    mapsLittle[c('montana',
+                 'muehlenbergii')]
+               )
+  xy <- as.data.frame(mapsLittle$'montana|prinoides|muehlenbergii'[, c('long', 'lat')])
+  pj <- project(xy, proj4string, inverse=TRUE)
+  mapsLittle$'montana|prinoides|muehlenbergii'$lat <- pj$y
+  mapsLittle$'montana|prinoides|muehlenbergii'$long <- pj$x
+
 }
 
 states <- map_data("state")
 counties <- map_data('county')
-cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73",
-                "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-names(cbbPalette) <- dat.seq.mapping$Species %>% unique
-
+#cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73",
+#                "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+#names(cbbPalette) <- dat.seq.mapping$Species %>% unique
+cbbPalette <- c(
+  'Quercus alba' = '#E61E51',
+  'Quercus bicolor' = '#3094D1',
+  'Quercus macrocarpa' = '#339947',
+  'Quercus michauxii' = '#F79750',
+  'Quercus montana' = '#E59CC4',
+  'Quercus muehlenbergii' = '#6750A0',
+  'Quercus prinoides' = '#6750D0',
+  'Quercus stellata' = '#E0E21B'
+)
 p <- ggplot()
 p <- p + geom_polygon(data = counties,
                       aes(x = long, y = lat, group = group),
@@ -68,10 +111,6 @@ p <- p + geom_polygon(data = states,
                       fill = NA, color = "gray70",
                       lwd=0.3)## figure out line width here
 ## add in a layer here of light gray for Q. macrocarpa, from GBIF, then overplot with counties, fill = NA
-p <- p + geom_polygon(data = mapsLittle$all,
-  aes(x =long, y =lat, group = spGroup, fill = Species),
-      alpha = 0.4
-      )
 p <- p + coord_fixed(1.3)
 p <- p + coord_map('albers', lat0=40, lat1=38)
 p <- p + scale_fill_manual(values = cbbPalette)
@@ -86,7 +125,12 @@ for(i in c('macro',
            'alba',
            'michauxii|bicolor|stellata',
            'montana|prinoides|muehlenbergii')) {
-  p.map[[i]] <- p + geom_point(data = dat.seq.mapping[grep(i, dat.seq.mapping$Species),],
+  p.map[[i]] <- p + geom_polygon(data = mapsLittle[[i]],
+    aes(x =long, y =lat, group = spGroup, fill = Species),
+        alpha = 0.4
+        )
+
+  p.map[[i]] <- p.map[[i]] + geom_point(data = dat.seq.mapping[grep(i, dat.seq.mapping$Species),],
                               mapping = aes(x = jitter(long), y = jitter(lat),
                                             fill = Species
                                             ),
@@ -100,7 +144,8 @@ for(i in c('macro',
 
 p.out <- grid.arrange(grobs = p.map)
 ggsave('../out/Fig1.map.pdf', plot = p.out,
-        width = 11, height = 7.5, units = 'in')
+        width = 11, height = 7.5, units = 'in',
+        useDingbats = FALSE)
 
 p.legend.only <- p + geom_point(data = dat.seq.mapping,
                             mapping = aes(x = long, y = lat,
@@ -112,7 +157,8 @@ p.legend.only <- p + geom_point(data = dat.seq.mapping,
                           ) +
                   theme(legend.position = "left")
 ggsave('../out/Fig1.legendToPaste.pdf', plot = p.legend.only,
-        width = 11, height = 7.5, units = 'in')
+        width = 11, height = 7.5, units = 'in',
+        useDingbats = FALSE)
 
 ### make table 2
 
