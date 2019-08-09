@@ -67,7 +67,7 @@ loci.handPick.names <- c(
 locus.side.colors <- ifelse(loci.def.TF, 'white', 'white')
 locus.side.colors[lapply(loci.handPick.names, grep, x = names(loci.def.TF)) %>% unlist] <- 'red'
 
-pdf('../out/locus.heatmap.pdf', 8.5, 11)
+pdf('../out/FigS2-locus.heatmap.pdf', 8.5, 11)
 heatmap(dat.gen.tabProp.mat, Rowv=NA, Colv=NA,
         #col = cm.colors(256),
         col = gray(256:0 / 256),
@@ -78,4 +78,16 @@ heatmap(dat.gen.tabProp.mat, Rowv=NA, Colv=NA,
 legend("topleft", legend=c("Alleles from 20 handpicked loci"),
         pch=15, pt.cex = 2, col = c('Red'),
       bty = 'n')
+dev.off()
+
+#pdf('../out/Fig02-v2-printVesion-locus.heatmap.pdf', 5.5, 8.25)
+pdf('../out/Fig02-v2-printVesion-locus.heatmap.pdf', 2.625, 8.25)
+par(mar = rep(0,4))
+heatmap(dat.gen.tabProp.mat, Rowv=NA, Colv=NA,
+        #col = cm.colors(256),
+        col = gray(256:0 / 256),
+        cexRow = 0.5,
+        RowSideColors = locus.side.colors,
+        margins=c(5,0),
+      scale = 'none')
 dev.off()
